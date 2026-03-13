@@ -3,7 +3,7 @@ import MainLayout from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Link } from 'wouter';
 import { Helmet } from 'react-helmet';
-import { Database, Server, Brain, BarChart, Users, Code } from 'lucide-react';
+import { Database, Server, Brain, BarChart, Users, Code, Cpu } from 'lucide-react';
 
 const About: React.FC = () => {
   const skills = [
