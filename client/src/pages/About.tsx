@@ -9,23 +9,30 @@ const About: React.FC = () => {
   const skills = [
     { name: 'Data Engineering', icon: <Database className="h-6 w-6" />, description: 'Building robust data pipelines and ETL processes' },
     { name: 'Big Data Systems', icon: <Server className="h-6 w-6" />, description: 'Working with large-scale distributed systems like Hadoop and Spark' },
+    { name: 'Artificial Intelligence', icon: <Cpu className="h-6 w-6" />, description: 'Designing intelligent systems and leveraging AI to automate decision-making' },
     { name: 'Machine Learning', icon: <Brain className="h-6 w-6" />, description: 'Implementing ML models for predictive analytics' },
     { name: 'Data Visualization', icon: <BarChart className="h-6 w-6" />, description: 'Creating insightful data dashboards and visualizations' },
-    { name: 'Team Leadership', icon: <Users className="h-6 w-6" />, description: 'Leading data teams and managing complex projects' },
+    // { name: 'Team Leadership', icon: <Users className="h-6 w-6" />, description: 'Leading data teams and managing complex projects' },
     { name: 'Software Development', icon: <Code className="h-6 w-6" />, description: 'Building data-driven applications and APIs' },
   ];
 
   const experiences = [
     {
+      title: 'Data Engineer',
+      company: 'Deloitte',
+      period: 'October 2023 - January 2025',
+      description: 'As a consultant, I work across data engineering, AI, and machine learning. I design and optimize large‑scale data pipelines, build frameworks for various cloud solutions, and engineer resilient cloud architectures. I also develop and deploy machine learning solutions, leveraging platforms like Databricks to manage distributed datasets and troubleshoot data quality issues using advanced SQL and analytics techniques.'
+    },
+    {
       title: 'Junior Data Engineer',
       company: 'Netstar',
-      period: 'October 2023 - January 2025',
+      period: 'June 2023 - May 2025',
       description: 'As a junior developer, I focused on data engineering by designing Azure Synapse monitoring systems and optimizing data pipelines. I utilized Databricks for managing Cassandra data and investigated discrepancies with SQL.'
     },
     {
       title: 'Data analytics Trainee',
       company: 'Mecer Inter Ed',
-      period: 'June 2023 - September 2023',
+      period: 'February 2023 - April 2023',
       description: 'To learn and acquire skills to maintain Databases, identify new opportunities to improve processes, create visually appealing visualizations using Power BI, extracting useful insights from data to support critical decision making.'
     }
   ];
@@ -34,7 +41,7 @@ const About: React.FC = () => {
     <MainLayout>
       <Helmet>
         <title>About Me | DataEngineered</title>
-        <meta name="description" content="Learn more about Zwiswa Muridili, a junior data engineer with expertise in building data pipelines, machine learning models, and data visualization solutions." />
+        <meta name="description" content="Learn more about Zwiswa Muridili, a data engineer with expertise in building data pipelines, AI & machine learning models, and data visualization solutions." />
       </Helmet>
 
       <section className="py-12 md:py-20 bg-gray-50">
@@ -42,7 +49,7 @@ const About: React.FC = () => {
           <div className="flex flex-col md:flex-row items-center gap-12">
             <div className="md:w-1/3">
               <img 
-                src="https://media.licdn.com/dms/image/v2/D4D03AQEnT-sSFiUxWA/profile-displayphoto-shrink_800_800/B4DZam7GSyHQAc-/0/1746557234703?e=1753920000&v=beta&t=SafxZDXFAfbf0fWbGmJYqZQMcbOxn-QGcun_cS2AXy8" 
+                src="https://media.licdn.com/dms/image/v2/D4D03AQHz1j0ZH1MY4g/profile-displayphoto-scale_400_400/B4DZgY5kvyGkA4-/0/1752764403691?e=1775088000&v=beta&t=dY1tpviGyIpS1DPwJjPG0Z5z4yYClb_5ePVNtdQGlE8" 
                 alt="Zwiswa Muridili" 
                 className="rounded-lg shadow-lg"
               />
@@ -50,7 +57,7 @@ const About: React.FC = () => {
             <div className="md:w-2/3">
               <h1 className="text-3xl md:text-4xl font-bold mb-4">About Me</h1>
               <p className="text-xl text-gray-600 mb-6">
-                I'm Zwiswa Muridili, a Junior Data Engineer with less than 2 years of experience in building data infrastructure, implementing machine learning solutions, and creating meaningful data visualizations.
+                I'm Zwiswa Muridili, a Data Engineer with over 3 years of experience in building data infrastructure, implementing machine learning solutions, and creating meaningful data visualizations.
               </p>
               <p className="text-gray-600 mb-6">
                 With a background in computer science and a passion for solving complex data problems, I've helped numerous organizations transform their data into actionable insights. This blog is my way of sharing knowledge and experiences with the data community.
