@@ -9,7 +9,7 @@ const Contact: React.FC = () => {
     <MainLayout>
       <Helmet>
         <title>Contact | DataEngineered</title>
-        <meta name="description" content="Get in touch with David Chen for data engineering consultation, speaking engagements, or collaboration opportunities." />
+        <meta name="description" content="Get in touch with Zwiswa Muridili for data engineering consultation, speaking engagements, or collaboration opportunities." />
       </Helmet>
 
       <section className="bg-gray-900 text-white py-16">
@@ -37,8 +37,8 @@ const Contact: React.FC = () => {
                     <Mail className="h-5 w-5 text-primary mt-1 mr-3" />
                     <div>
                       <p className="font-medium">Email</p>
-                      <a href="mailto:david@dataengineered.com" className="text-gray-600 hover:text-primary">
-                        david@dataengineered.com
+                      <a href="mailto:zwiswamuridili990@gmail.com" className="text-gray-600 hover:text-primary">
+                        zwiswamuridili990@gmail.com
                       </a>
                     </div>
                   </li>
@@ -46,14 +46,14 @@ const Contact: React.FC = () => {
                     <MapPin className="h-5 w-5 text-primary mt-1 mr-3" />
                     <div>
                       <p className="font-medium">Location</p>
-                      <p className="text-gray-600">San Francisco, California</p>
+                      <p className="text-gray-600">South Africa, Johannesburg</p>
                     </div>
                   </li>
                   <li className="flex items-start">
                     <Clock className="h-5 w-5 text-primary mt-1 mr-3" />
                     <div>
                       <p className="font-medium">Working Hours</p>
-                      <p className="text-gray-600">Monday - Friday: 9am - 5pm PST</p>
+                      <p className="text-gray-600">Monday - Friday: 9am - 5pm SAST</p>
                     </div>
                   </li>
                 </ul>
@@ -77,7 +77,7 @@ const Contact: React.FC = () => {
                     </svg>
                   </a>
                   <a 
-                    href="https://linkedin.com" 
+                    href="www.linkedin.com/in/zwiswa-muridili-15439a302" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="bg-white/20 hover:bg-white/30 rounded-full p-2 transition-colors"
@@ -90,7 +90,7 @@ const Contact: React.FC = () => {
                     </svg>
                   </a>
                   <a 
-                    href="https://github.com" 
+                    href="https://github.com/JepStar990" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="bg-white/20 hover:bg-white/30 rounded-full p-2 transition-colors"
