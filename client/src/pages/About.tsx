@@ -20,7 +20,7 @@ const About: React.FC = () => {
     {
       title: 'Data Engineer',
       company: 'Deloitte',
-      period: 'October 2023 - January 2025',
+      period: 'June 2025 - Current',
       description: 'As a consultant, I work across data engineering, AI, and machine learning. I design and optimize large‑scale data pipelines, build frameworks for various cloud solutions, and engineer resilient cloud architectures. I also develop and deploy machine learning solutions, leveraging platforms like Databricks to manage distributed datasets and troubleshoot data quality issues using advanced SQL and analytics techniques.'
     },
     {
@@ -32,7 +32,7 @@ const About: React.FC = () => {
     {
       title: 'Data analytics Trainee',
       company: 'Mecer Inter Ed',
-      period: 'February 2023 - April 2023',
+      period: 'February 2023 - March 2023',
       description: 'To learn and acquire skills to maintain Databases, identify new opportunities to improve processes, create visually appealing visualizations using Power BI, extracting useful insights from data to support critical decision making.'
     }
   ];
