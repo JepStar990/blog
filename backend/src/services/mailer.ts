@@ -1,21 +1,12 @@
-import nodemailer from "nodemailer";
-
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.GMAIL_USER || "zwiswamuridili990@gmail.com",
-    pass: process.env.GMAIL_APP_PASSWORD,
-  },
-});
-
 export async function sendContactEmail(data: {
   name: string;
   email: string;
   subject: string;
   message: string;
 }) {
-  if (!process.env.GMAIL_APP_PASSWORD) {
-    console.warn("GMAIL_APP_PASSWORD not set — skipping email send");
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    console.warn("RESEND_API_KEY not set — skipping email send");
     return;
   }
 
@@ -28,13 +19,25 @@ export async function sendContactEmail(data: {
     <p>${escapeHtml(data.message).replace(/\n/g, "<br />")}</p>
   `;
 
-  await transporter.sendMail({
-    from: `"Blog Contact" <${process.env.GMAIL_USER || "zwiswamuridili990@gmail.com"}>`,
-    to: "zwiswamuridili990@gmail.com",
-    replyTo: data.email,
-    subject: `[Blog] ${data.subject}`,
-    html,
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      from: process.env.RESEND_FROM || "Blog <noreply@resend.dev>",
+      to: "zwiswamuridili990@gmail.com",
+      reply_to: data.email,
+      subject: `[Blog] ${data.subject}`,
+      html,
+    }),
   });
+
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`Resend API error (${res.status}): ${body}`);
+  }
 }
 
 function escapeHtml(str: string): string {

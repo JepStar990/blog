@@ -50,28 +50,50 @@ export default function PostEditor({ id }: Props) {
     enabled: isEditing,
   });
 
+  // Check for accepted AI edit (runs before post query resolves for new posts)
+  useEffect(() => {
+    const raw = sessionStorage.getItem("accept_ai_edit");
+    if (raw) {
+      try {
+        const accepted = JSON.parse(raw);
+        if (accepted.title) setTitle(accepted.title);
+        if (accepted.excerpt) setExcerpt(accepted.excerpt);
+        if (accepted.coverImage) setCoverImage(accepted.coverImage);
+        if (accepted.content) setContent(accepted.content);
+      } catch {
+        // old format: just content string
+        setContent(raw);
+      }
+      sessionStorage.removeItem("accept_ai_edit");
+    }
+  }, []);
+
   useEffect(() => {
     if (post) {
-      setTitle(post.title || "");
+      const raw = sessionStorage.getItem("accept_ai_edit");
+      let accepted: any = null;
+      if (raw) {
+        try {
+          accepted = JSON.parse(raw);
+        } catch {
+          accepted = null;
+        }
+      }
+
+      setTitle(accepted?.title || post.title || "");
       setSlug(post.slug || "");
-      setExcerpt(post.excerpt || "");
-      setContent(post.content || "");
-      setCoverImage(post.coverImage || "");
+      setExcerpt(accepted?.excerpt || post.excerpt || "");
+      setContent(accepted?.content || (raw && accepted === null ? raw : post.content || ""));
+      setCoverImage(accepted?.coverImage || post.coverImage || "");
       setFeatured(post.featured || false);
       setReadingTime(post.readingTime || 5);
       setCategoryId(post.categoryId || null);
       setStatus(post.status || "draft");
+      if (raw) {
+        sessionStorage.removeItem("accept_ai_edit");
+      }
     }
   }, [post]);
-
-  // Check for accepted AI edit
-  useEffect(() => {
-    const accepted = sessionStorage.getItem("accept_ai_edit");
-    if (accepted) {
-      setContent(accepted);
-      sessionStorage.removeItem("accept_ai_edit");
-    }
-  }, []);
 
   const saveMutation = useMutation({
     mutationFn: (data: any) =>
@@ -151,12 +173,18 @@ export default function PostEditor({ id }: Props) {
       const res = await apiRequest(
         "POST",
         `/api/admin/posts/${postId}/ai-edit`,
-        { instruction: aiInstruction, content },
+        {
+          instruction: aiInstruction,
+          title,
+          excerpt,
+          coverImage,
+          content,
+        },
         { headers: { "X-DeepSeek-Key": deepseekKey || "" } }
       );
       const data = await res.json();
-      sessionStorage.setItem("ai_original", data.original);
-      sessionStorage.setItem("ai_edited", data.edited);
+      sessionStorage.setItem("ai_original", JSON.stringify(data.original));
+      sessionStorage.setItem("ai_edited", JSON.stringify(data.edited));
       setAiDialogOpen(false);
       navigate(`/admin/posts/${postId}/diff`);
     } catch (err: any) {
@@ -210,6 +238,8 @@ export default function PostEditor({ id }: Props) {
                     "Make more concise",
                     "Strengthen the introduction",
                     "Add a compelling conclusion",
+                    "Suggest a better title and excerpt",
+                    "Suggest a cover image",
                   ].map((preset) => (
                     <button
                       key={preset}

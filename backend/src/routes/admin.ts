@@ -95,7 +95,7 @@ router.post("/posts/:id/ai-edit", async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
     if (isNaN(id)) return res.status(400).json({ error: "Invalid post ID" });
 
-    const { instruction, content } = req.body;
+    const { instruction, title, excerpt, coverImage, content } = req.body;
     if (!instruction || !content) {
       return res.status(400).json({ error: "Instruction and content are required" });
     }
@@ -105,7 +105,14 @@ router.post("/posts/:id/ai-edit", async (req: Request, res: Response) => {
       return res.status(400).json({ error: "DeepSeek API key is required in X-DeepSeek-Key header" });
     }
 
-    const result = await editWithAI({ instruction, content, apiKey: deepseekKey });
+    const result = await editWithAI({
+      instruction,
+      title,
+      excerpt,
+      coverImage,
+      content,
+      apiKey: deepseekKey,
+    });
     res.json(result);
   } catch (error: any) {
     console.error("AI edit error:", error);
