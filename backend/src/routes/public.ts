@@ -1,6 +1,7 @@
 import { Router, type Request, type Response } from "express";
 import { storage } from "../storage.js";
 import { insertContactMessageSchema, insertSubscriptionSchema } from "../schema.js";
+import { sendContactEmail } from "../services/mailer.js";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 
@@ -141,6 +142,12 @@ router.post("/contact", async (req: Request, res: Response) => {
   try {
     const contactData = insertContactMessageSchema.parse(req.body);
     const contactMessage = await storage.createContactMessage(contactData);
+
+    // Send email notification (fire-and-forget, don't block response)
+    sendContactEmail(contactData).catch((err) =>
+      console.error("Failed to send contact email:", err)
+    );
+
     res.status(201).json({ message: "Message sent successfully", contactMessage });
   } catch (error) {
     console.error("Error sending contact message:", error);
