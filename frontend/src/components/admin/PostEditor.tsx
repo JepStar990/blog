@@ -113,9 +113,38 @@ export default function PostEditor({ id }: Props) {
     setAiError("");
     setAiLoading(true);
     try {
+      let postId = id;
+
+      // If creating a new post, save it as draft first so it has a real ID
+      if (!postId) {
+        const saveRes = await apiRequest("POST", "/api/admin/posts", {
+          title: title || "Untitled Draft",
+          slug:
+            slug ||
+            title
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, "-")
+              .replace(/^-|-$/g, "") ||
+            "untitled-draft",
+          excerpt: excerpt || "Draft in progress...",
+          content,
+          coverImage:
+            coverImage ||
+            "https://images.unsplash.com/photo-1517694712202-14dd9538aa97",
+          featured,
+          readingTime,
+          categoryId,
+          status: "draft",
+          authorId: 1,
+          publishedAt: new Date().toISOString(),
+        });
+        const saved = await saveRes.json();
+        postId = String(saved.id);
+      }
+
       const res = await apiRequest(
         "POST",
-        `/api/admin/posts/${id || "new"}/ai-edit`,
+        `/api/admin/posts/${postId}/ai-edit`,
         { instruction: aiInstruction, content },
         { headers: { "X-DeepSeek-Key": deepseekKey || "" } }
       );
@@ -123,7 +152,7 @@ export default function PostEditor({ id }: Props) {
       sessionStorage.setItem("ai_original", data.original);
       sessionStorage.setItem("ai_edited", data.edited);
       setAiDialogOpen(false);
-      navigate(`/admin/posts/${id || "new"}/diff`);
+      navigate(`/admin/posts/${postId}/diff`);
     } catch (err: any) {
       setAiError(err.message || "AI editing failed");
     } finally {
