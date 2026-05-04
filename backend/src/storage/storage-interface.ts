@@ -28,11 +28,15 @@ export interface IStorage {
   getPost(id: number): Promise<Post | undefined>;
   getPostBySlug(slug: string): Promise<Post | undefined>;
   createPost(post: InsertPost): Promise<Post>;
+  updatePost(id: number, post: Partial<InsertPost>): Promise<Post>;
+  deletePost(id: number): Promise<void>;
   getFeaturedPosts(): Promise<Post[]>;
   getLatestPosts(limit?: number): Promise<Post[]>;
   getPostsByCategory(categoryId: number): Promise<Post[]>;
   getPostsByTag(tagId: number): Promise<Post[]>;
   searchPosts(query: string): Promise<Post[]>;
+  getAllPostsAdmin(): Promise<Post[]>;
+  getPostsByStatus(status: string): Promise<Post[]>;
 
   // Category operations
   getAllCategories(): Promise<Category[]>;

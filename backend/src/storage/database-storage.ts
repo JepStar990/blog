@@ -1,4 +1,4 @@
-import { eq, like, desc, or, inArray } from 'drizzle-orm';
+import { eq, and, like, desc, or, inArray } from 'drizzle-orm';
 import { db } from '../db';
 import { IStorage } from './storage-interface';
 import {
@@ -47,16 +47,23 @@ export class DatabaseStorage implements IStorage {
 
   // Post operations
   async getAllPosts(): Promise<Post[]> {
-    return db.select().from(posts).orderBy(desc(posts.publishedAt));
+    return db.select()
+      .from(posts)
+      .where(eq(posts.status, "published"))
+      .orderBy(desc(posts.publishedAt));
   }
 
   async getPost(id: number): Promise<Post | undefined> {
-    const [post] = await db.select().from(posts).where(eq(posts.id, id));
+    const [post] = await db.select()
+      .from(posts)
+      .where(and(eq(posts.id, id), eq(posts.status, "published")));
     return post;
   }
 
   async getPostBySlug(slug: string): Promise<Post | undefined> {
-    const [post] = await db.select().from(posts).where(eq(posts.slug, slug));
+    const [post] = await db.select()
+      .from(posts)
+      .where(and(eq(posts.slug, slug), eq(posts.status, "published")));
     return post;
   }
 
@@ -65,16 +72,30 @@ export class DatabaseStorage implements IStorage {
     return createdPost;
   }
 
+  async updatePost(id: number, data: Partial<InsertPost>): Promise<Post> {
+    const [updated] = await db.update(posts)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(posts.id, id))
+      .returning();
+    if (!updated) throw new Error("Post not found");
+    return updated;
+  }
+
+  async deletePost(id: number): Promise<void> {
+    await db.delete(posts).where(eq(posts.id, id));
+  }
+
   async getFeaturedPosts(): Promise<Post[]> {
     return db.select()
       .from(posts)
-      .where(eq(posts.featured, true))
+      .where(and(eq(posts.featured, true), eq(posts.status, "published")))
       .orderBy(desc(posts.publishedAt));
   }
 
   async getLatestPosts(limit: number = 10): Promise<Post[]> {
     return db.select()
       .from(posts)
+      .where(eq(posts.status, "published"))
       .orderBy(desc(posts.publishedAt))
       .limit(limit);
   }
@@ -82,7 +103,7 @@ export class DatabaseStorage implements IStorage {
   async getPostsByCategory(categoryId: number): Promise<Post[]> {
     return db.select()
       .from(posts)
-      .where(eq(posts.categoryId, categoryId))
+      .where(and(eq(posts.categoryId, categoryId), eq(posts.status, "published")))
       .orderBy(desc(posts.publishedAt));
   }
 
@@ -90,14 +111,14 @@ export class DatabaseStorage implements IStorage {
     const postTagsResult = await db.select()
       .from(postsTags)
       .where(eq(postsTags.tagId, tagId));
-    
+
     if (postTagsResult.length === 0) return [];
-    
+
     const postIds = postTagsResult.map(pt => pt.postId);
-    
+
     return db.select()
       .from(posts)
-      .where(inArray(posts.id, postIds))
+      .where(and(inArray(posts.id, postIds), eq(posts.status, "published")))
       .orderBy(desc(posts.publishedAt));
   }
 
@@ -106,13 +127,27 @@ export class DatabaseStorage implements IStorage {
     return db.select()
       .from(posts)
       .where(
-        or(
-          like(posts.title, lowerQuery),
-          like(posts.excerpt, lowerQuery),
-          like(posts.content, lowerQuery)
+        and(
+          eq(posts.status, "published"),
+          or(
+            like(posts.title, lowerQuery),
+            like(posts.excerpt, lowerQuery),
+            like(posts.content, lowerQuery)
+          )
         )
       )
       .orderBy(desc(posts.publishedAt));
+  }
+
+  async getAllPostsAdmin(): Promise<Post[]> {
+    return db.select().from(posts).orderBy(desc(posts.updatedAt));
+  }
+
+  async getPostsByStatus(status: string): Promise<Post[]> {
+    return db.select()
+      .from(posts)
+      .where(eq(posts.status, status))
+      .orderBy(desc(posts.updatedAt));
   }
 
   // Category operations

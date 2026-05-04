@@ -20,11 +20,15 @@ export interface IStorage {
   getPost(id: number): Promise<Post | undefined>;
   getPostBySlug(slug: string): Promise<Post | undefined>;
   createPost(post: InsertPost): Promise<Post>;
+  updatePost(id: number, post: Partial<InsertPost>): Promise<Post>;
+  deletePost(id: number): Promise<void>;
   getFeaturedPosts(): Promise<Post[]>;
   getLatestPosts(limit?: number): Promise<Post[]>;
   getPostsByCategory(categoryId: number): Promise<Post[]>;
   getPostsByTag(tagId: number): Promise<Post[]>;
   searchPosts(query: string): Promise<Post[]>;
+  getAllPostsAdmin(): Promise<Post[]>;
+  getPostsByStatus(status: string): Promise<Post[]>;
 
   // Category operations
   getAllCategories(): Promise<Category[]>;
@@ -119,17 +123,20 @@ export class MemStorage implements IStorage {
 
   // Post methods
   async getAllPosts(): Promise<Post[]> {
-    return Array.from(this.posts.values()).sort((a, b) => 
-      new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
+    return Array.from(this.posts.values())
+      .filter(post => post.status === "published")
+      .sort((a, b) =>
+        new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
   }
 
   async getPost(id: number): Promise<Post | undefined> {
-    return this.posts.get(id);
+    const post = this.posts.get(id);
+    return post && post.status === "published" ? post : undefined;
   }
 
   async getPostBySlug(slug: string): Promise<Post | undefined> {
     return Array.from(this.posts.values()).find(
-      (post) => post.slug === slug,
+      (post) => post.slug === slug && post.status === "published",
     );
   }
 
@@ -137,26 +144,51 @@ export class MemStorage implements IStorage {
     const id = this.currentPostIds++;
     // Ensure featured is not undefined
     const featured = insertPost.featured ?? false;
-    const post: Post = { ...insertPost, id, featured };
+    const status = insertPost.status ?? "published";
+    const post: Post = { ...insertPost, id, featured, status, updatedAt: new Date() };
     this.posts.set(id, post);
     return post;
   }
 
+  async updatePost(id: number, data: Partial<InsertPost>): Promise<Post> {
+    const existing = this.posts.get(id);
+    if (!existing) throw new Error("Post not found");
+    const updated = { ...existing, ...data, updatedAt: new Date() };
+    this.posts.set(id, updated);
+    return updated;
+  }
+
+  async deletePost(id: number): Promise<void> {
+    this.posts.delete(id);
+  }
+
+  async getAllPostsAdmin(): Promise<Post[]> {
+    return Array.from(this.posts.values())
+      .sort((a, b) => new Date(b.updatedAt || b.publishedAt).getTime() - new Date(a.updatedAt || a.publishedAt).getTime());
+  }
+
+  async getPostsByStatus(status: string): Promise<Post[]> {
+    return Array.from(this.posts.values())
+      .filter(p => p.status === status)
+      .sort((a, b) => new Date(b.updatedAt || b.publishedAt).getTime() - new Date(a.updatedAt || a.publishedAt).getTime());
+  }
+
   async getFeaturedPosts(): Promise<Post[]> {
     return Array.from(this.posts.values())
-      .filter(post => post.featured)
+      .filter(post => post.featured && post.status === "published")
       .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
   }
 
   async getLatestPosts(limit: number = 10): Promise<Post[]> {
     return Array.from(this.posts.values())
+      .filter(post => post.status === "published")
       .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
       .slice(0, limit);
   }
 
   async getPostsByCategory(categoryId: number): Promise<Post[]> {
     return Array.from(this.posts.values())
-      .filter(post => post.categoryId === categoryId)
+      .filter(post => post.categoryId === categoryId && post.status === "published")
       .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
   }
 
@@ -164,19 +196,20 @@ export class MemStorage implements IStorage {
     const postIds = Array.from(this.postsTags.values())
       .filter(pt => pt.tagId === tagId)
       .map(pt => pt.postId);
-    
+
     return Array.from(this.posts.values())
-      .filter(post => postIds.includes(post.id))
+      .filter(post => postIds.includes(post.id) && post.status === "published")
       .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
   }
 
   async searchPosts(query: string): Promise<Post[]> {
     const lowerQuery = query.toLowerCase();
     return Array.from(this.posts.values())
-      .filter(post => 
-        post.title.toLowerCase().includes(lowerQuery) || 
-        post.excerpt.toLowerCase().includes(lowerQuery) || 
-        post.content.toLowerCase().includes(lowerQuery)
+      .filter(post =>
+        post.status === "published" && (
+        post.title.toLowerCase().includes(lowerQuery) ||
+        post.excerpt.toLowerCase().includes(lowerQuery) ||
+        post.content.toLowerCase().includes(lowerQuery))
       )
       .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
   }
@@ -2168,4 +2201,8 @@ In future posts, we'll explore more complex visualizations like geographic maps,
   }
 }
 
-export const storage = new MemStorage();
+import { DatabaseStorage } from "./storage/database-storage.js";
+
+export const storage = process.env.DATABASE_URL
+  ? new DatabaseStorage()
+  : new MemStorage();

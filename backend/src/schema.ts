@@ -30,6 +30,8 @@ export const posts = pgTable("posts", {
   readingTime: integer("reading_time").notNull(),
   categoryId: integer("category_id").notNull(),
   authorId: integer("author_id").notNull(),
+  status: text("status").notNull().default("published"),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
 export const insertPostSchema = createInsertSchema(posts).omit({
