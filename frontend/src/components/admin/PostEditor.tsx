@@ -187,19 +187,41 @@ export default function PostEditor({ id }: Props) {
                 AI Edit
               </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="sm:max-w-lg">
               <DialogHeader>
                 <DialogTitle>AI Edit</DialogTitle>
                 <DialogDescription>
-                  Describe what you want the AI to do with your post content.
+                  The AI acts as an expert blog editor — it preserves your markdown formatting and only changes what you ask.
                 </DialogDescription>
               </DialogHeader>
-              <Textarea
-                placeholder="e.g., Make the tone more professional and fix grammar mistakes"
-                value={aiInstruction}
-                onChange={(e) => setAiInstruction(e.target.value)}
-                rows={3}
-              />
+              <div className="space-y-3">
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    "Fix grammar and spelling",
+                    "Make tone more professional",
+                    "Improve clarity and flow",
+                    "Add more detail and depth",
+                    "Make more concise",
+                    "Strengthen the introduction",
+                    "Add a compelling conclusion",
+                  ].map((preset) => (
+                    <button
+                      key={preset}
+                      type="button"
+                      onClick={() => setAiInstruction(preset)}
+                      className="px-3 py-1 text-xs rounded-full border border-border bg-muted/50 hover:bg-muted hover:border-primary/50 transition-colors"
+                    >
+                      {preset}
+                    </button>
+                  ))}
+                </div>
+                <Textarea
+                  placeholder="Or write a custom instruction..."
+                  value={aiInstruction}
+                  onChange={(e) => setAiInstruction(e.target.value)}
+                  rows={3}
+                />
+              </div>
               {aiError && <p className="text-sm text-destructive">{aiError}</p>}
               <DialogFooter>
                 <Button variant="outline" onClick={() => setAiDialogOpen(false)}>
