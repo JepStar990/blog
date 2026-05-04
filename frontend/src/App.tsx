@@ -36,40 +36,40 @@ function Router() {
       <Route path="/subscribe" component={Subscribe} />
 
       {/* Admin routes */}
-      <Route path="/admin">
+      <Route path="/admin" component={LoginPage} />
+      <Route path="/admin/posts">
         {() => (
           <AdminLayout>
-            <Switch>
-              <Route path="/admin" component={LoginPage} />
-              <Route path="/admin/posts">
-                {() => (
-                  <AuthGuard>
-                    <Dashboard />
-                  </AuthGuard>
-                )}
-              </Route>
-              <Route path="/admin/posts/new">
-                {() => (
-                  <AuthGuard>
-                    <PostEditor />
-                  </AuthGuard>
-                )}
-              </Route>
-              <Route path="/admin/posts/:id">
-                {(params) => (
-                  <AuthGuard>
-                    <PostEditor id={params.id} />
-                  </AuthGuard>
-                )}
-              </Route>
-              <Route path="/admin/posts/:id/diff">
-                {(params) => (
-                  <AuthGuard>
-                    <DiffReview id={params.id} />
-                  </AuthGuard>
-                )}
-              </Route>
-            </Switch>
+            <AuthGuard>
+              <Dashboard />
+            </AuthGuard>
+          </AdminLayout>
+        )}
+      </Route>
+      <Route path="/admin/posts/new">
+        {() => (
+          <AdminLayout>
+            <AuthGuard>
+              <PostEditor />
+            </AuthGuard>
+          </AdminLayout>
+        )}
+      </Route>
+      <Route path="/admin/posts/:id">
+        {(params) => (
+          <AdminLayout>
+            <AuthGuard>
+              <PostEditor id={params.id} />
+            </AuthGuard>
+          </AdminLayout>
+        )}
+      </Route>
+      <Route path="/admin/posts/:id/diff">
+        {(params) => (
+          <AdminLayout>
+            <AuthGuard>
+              <DiffReview id={params.id} />
+            </AuthGuard>
           </AdminLayout>
         )}
       </Route>
