@@ -4,6 +4,8 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "./lib/theme-provider";
+import { AuthGuard } from "@/components/admin/AuthGuard";
+import { AdminLayout } from "@/components/admin/AdminLayout";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/Home";
 import About from "@/pages/About";
@@ -14,10 +16,15 @@ import Contact from "@/pages/Contact";
 import Subscribe from "@/pages/Subscribe";
 import CategoryPage from "@/pages/CategoryPage";
 import TagPage from "@/pages/TagPage";
+import LoginPage from "@/components/admin/LoginPage";
+import Dashboard from "@/components/admin/Dashboard";
+import PostEditor from "@/components/admin/PostEditor";
+import DiffReview from "@/components/admin/DiffReview";
 
 function Router() {
   return (
     <Switch>
+      {/* Public routes */}
       <Route path="/" component={Home} />
       <Route path="/about" component={About} />
       <Route path="/blog" component={Blog} />
@@ -27,6 +34,46 @@ function Router() {
       <Route path="/portfolio" component={Portfolio} />
       <Route path="/contact" component={Contact} />
       <Route path="/subscribe" component={Subscribe} />
+
+      {/* Admin routes */}
+      <Route path="/admin">
+        {() => (
+          <AdminLayout>
+            <Switch>
+              <Route path="/admin" component={LoginPage} />
+              <Route path="/admin/posts">
+                {() => (
+                  <AuthGuard>
+                    <Dashboard />
+                  </AuthGuard>
+                )}
+              </Route>
+              <Route path="/admin/posts/new">
+                {() => (
+                  <AuthGuard>
+                    <PostEditor />
+                  </AuthGuard>
+                )}
+              </Route>
+              <Route path="/admin/posts/:id">
+                {(params) => (
+                  <AuthGuard>
+                    <PostEditor id={params.id} />
+                  </AuthGuard>
+                )}
+              </Route>
+              <Route path="/admin/posts/:id/diff">
+                {(params) => (
+                  <AuthGuard>
+                    <DiffReview id={params.id} />
+                  </AuthGuard>
+                )}
+              </Route>
+            </Switch>
+          </AdminLayout>
+        )}
+      </Route>
+
       <Route component={NotFound} />
     </Switch>
   );
