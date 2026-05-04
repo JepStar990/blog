@@ -42,6 +42,7 @@ router.post("/posts", async (req: Request, res: Response) => {
   try {
     const post = await storage.createPost({
       ...req.body,
+      publishedAt: req.body.publishedAt ? new Date(req.body.publishedAt) : new Date(),
       status: req.body.status || "draft",
     });
     res.status(201).json(post);
@@ -58,7 +59,12 @@ router.put("/posts/:id", async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
     if (isNaN(id)) return res.status(400).json({ error: "Invalid post ID" });
 
-    const post = await storage.updatePost(id, req.body);
+    const data = { ...req.body };
+    if (data.publishedAt) {
+      data.publishedAt = new Date(data.publishedAt);
+    }
+
+    const post = await storage.updatePost(id, data);
     res.json(post);
   } catch (error: any) {
     console.error("Error updating post:", error);
