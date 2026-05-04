@@ -46,8 +46,9 @@ router.post("/posts", async (req: Request, res: Response) => {
     });
     res.status(201).json(post);
   } catch (error) {
-    console.error("Error creating post:", error);
-    res.status(500).json({ error: "Failed to create post" });
+    const msg = error instanceof Error ? error.message : String(error);
+    console.error("Error creating post:", msg);
+    res.status(500).json({ error: msg });
   }
 });
 
