@@ -133,11 +133,17 @@ export default function PostEditor({ id }: Props) {
             "https://images.unsplash.com/photo-1517694712202-14dd9538aa97",
           featured,
           readingTime,
-          categoryId,
+          categoryId: categoryId ?? categories?.[0]?.id ?? 1,
           status: "draft",
           authorId: 1,
           publishedAt: new Date().toISOString(),
         });
+
+        if (!saveRes.ok) {
+          const errBody = await saveRes.json().catch(() => ({}));
+          throw new Error((errBody as any).error || "Failed to save draft");
+        }
+
         const saved = await saveRes.json();
         postId = String(saved.id);
       }
