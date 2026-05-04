@@ -1,6 +1,16 @@
 /node_modules
-/dist
 .DS_Store
 /server/public
 vite.config.ts.*
 *.tar.gz
+
+# Frontend
+frontend/node_modules
+frontend/dist
+frontend/.env
+
+# Backend
+backend/node_modules
+backend/dist
+backend/.env
+backend/migrations
