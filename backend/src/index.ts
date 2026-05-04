@@ -1,10 +1,44 @@
-import express, { type Request, Response, NextFunction } from "express";
-import { registerRoutes } from "./routes.js";
+import express from "express";
+import cors from "cors";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
+import { createServer } from "http";
+import publicRoutes from "./routes/public.js";
+import adminRoutes from "./routes/admin.js";
+import { errorHandler } from "./middleware/errorHandler.js";
 
 const app = express();
+
+// Security
+app.use(helmet());
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || "http://localhost:5173",
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "X-API-Key", "X-DeepSeek-Key"],
+}));
+
+// Body parsing
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// Rate limiting
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use("/api", generalLimiter);
+
+const aiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use("/api/admin/posts/:id/ai-edit", aiLimiter);
+
+// Request logging
 app.use((req, _res, next) => {
   const start = Date.now();
   const path = req.path;
@@ -33,18 +67,16 @@ app.use((req, _res, next) => {
   next();
 });
 
-(async () => {
-  const server = await registerRoutes(app);
+// Routes
+app.use("/api", publicRoutes);
+app.use("/api/admin", adminRoutes);
 
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
-    res.status(status).json({ message });
-    console.error(err);
-  });
+// Error handler
+app.use(errorHandler);
 
-  const port = process.env.PORT ? parseInt(process.env.PORT) : 5000;
-  server.listen({ port, host: "0.0.0.0" }, () => {
-    console.log(`API server running on port ${port}`);
-  });
-})();
+// Start
+const port = process.env.PORT ? parseInt(process.env.PORT) : 5000;
+const server = createServer(app);
+server.listen({ port, host: "0.0.0.0" }, () => {
+  console.log(`API server running on port ${port}`);
+});

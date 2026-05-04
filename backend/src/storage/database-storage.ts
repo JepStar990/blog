@@ -139,6 +139,11 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(posts.publishedAt));
   }
 
+  async getPostAdmin(id: number): Promise<Post | undefined> {
+    const [post] = await db.select().from(posts).where(eq(posts.id, id));
+    return post;
+  }
+
   async getAllPostsAdmin(): Promise<Post[]> {
     return db.select().from(posts).orderBy(desc(posts.updatedAt));
   }

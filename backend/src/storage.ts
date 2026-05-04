@@ -27,6 +27,7 @@ export interface IStorage {
   getPostsByCategory(categoryId: number): Promise<Post[]>;
   getPostsByTag(tagId: number): Promise<Post[]>;
   searchPosts(query: string): Promise<Post[]>;
+  getPostAdmin(id: number): Promise<Post | undefined>;
   getAllPostsAdmin(): Promise<Post[]>;
   getPostsByStatus(status: string): Promise<Post[]>;
 
@@ -138,6 +139,10 @@ export class MemStorage implements IStorage {
     return Array.from(this.posts.values()).find(
       (post) => post.slug === slug && post.status === "published",
     );
+  }
+
+  async getPostAdmin(id: number): Promise<Post | undefined> {
+    return this.posts.get(id);
   }
 
   async createPost(insertPost: InsertPost): Promise<Post> {

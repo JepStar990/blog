@@ -35,6 +35,7 @@ export interface IStorage {
   getPostsByCategory(categoryId: number): Promise<Post[]>;
   getPostsByTag(tagId: number): Promise<Post[]>;
   searchPosts(query: string): Promise<Post[]>;
+  getPostAdmin(id: number): Promise<Post | undefined>;
   getAllPostsAdmin(): Promise<Post[]>;
   getPostsByStatus(status: string): Promise<Post[]>;
 
