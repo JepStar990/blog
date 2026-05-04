@@ -9,6 +9,9 @@ import { errorHandler } from "./middleware/errorHandler.js";
 
 const app = express();
 
+// Trust proxy (Render, Heroku, etc. sit behind a reverse proxy)
+app.set("trust proxy", 1);
+
 // Security
 app.use(helmet());
 app.use(cors({
@@ -27,6 +30,7 @@ const generalLimiter = rateLimit({
   max: 100,
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { trustProxy: false },
 });
 app.use("/api", generalLimiter);
 
@@ -35,6 +39,7 @@ const aiLimiter = rateLimit({
   max: 20,
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { trustProxy: false },
 });
 app.use("/api/admin/posts/:id/ai-edit", aiLimiter);
 
