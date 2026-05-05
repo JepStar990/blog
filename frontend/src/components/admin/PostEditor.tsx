@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -50,7 +50,10 @@ export default function PostEditor({ id }: Props) {
     enabled: isEditing,
   });
 
-  // Check for accepted AI edit (runs before post query resolves for new posts)
+  // Track whether we've already applied accepted AI changes to avoid overwrite
+  const appliedAcceptRef = useRef(false);
+
+  // Check for accepted AI edit — runs once on mount, before post query resolves
   useEffect(() => {
     const raw = sessionStorage.getItem("accept_ai_edit");
     if (raw) {
@@ -60,39 +63,29 @@ export default function PostEditor({ id }: Props) {
         if (accepted.excerpt) setExcerpt(accepted.excerpt);
         if (accepted.coverImage) setCoverImage(accepted.coverImage);
         if (accepted.content) setContent(accepted.content);
+        appliedAcceptRef.current = true;
       } catch {
-        // old format: just content string
         setContent(raw);
+        appliedAcceptRef.current = true;
       }
       sessionStorage.removeItem("accept_ai_edit");
     }
   }, []);
 
   useEffect(() => {
-    if (post) {
-      const raw = sessionStorage.getItem("accept_ai_edit");
-      let accepted: any = null;
-      if (raw) {
-        try {
-          accepted = JSON.parse(raw);
-        } catch {
-          accepted = null;
-        }
-      }
+    if (!post) return;
+    // If the mount effect already applied accepted changes, skip
+    if (appliedAcceptRef.current) return;
 
-      setTitle(accepted?.title || post.title || "");
-      setSlug(post.slug || "");
-      setExcerpt(accepted?.excerpt || post.excerpt || "");
-      setContent(accepted?.content || (raw && accepted === null ? raw : post.content || ""));
-      setCoverImage(accepted?.coverImage || post.coverImage || "");
-      setFeatured(post.featured || false);
-      setReadingTime(post.readingTime || 5);
-      setCategoryId(post.categoryId || null);
-      setStatus(post.status || "draft");
-      if (raw) {
-        sessionStorage.removeItem("accept_ai_edit");
-      }
-    }
+    setTitle(post.title || "");
+    setSlug(post.slug || "");
+    setExcerpt(post.excerpt || "");
+    setContent(post.content || "");
+    setCoverImage(post.coverImage || "");
+    setFeatured(post.featured || false);
+    setReadingTime(post.readingTime || 5);
+    setCategoryId(post.categoryId || null);
+    setStatus(post.status || "draft");
   }, [post]);
 
   const saveMutation = useMutation({
