@@ -64,7 +64,7 @@ const PostContent: React.FC<PostContentProps> = ({ post }) => {
           <div className="flex items-center mb-4">
             <div className="w-12 h-12 rounded-full overflow-hidden mr-4">
               <img 
-                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=100&q=80" 
+                src="https://media.licdn.com/dms/image/v2/D4D03AQHz1j0ZH1MY4g/profile-displayphoto-scale_400_400/B4DZgY5kvyGkA4-/0/1752764403691?e=1796860800&v=beta&t=v5BGpimJ-tU23iQ3QsC5OTP-dyFUITE29UumDYDUB1Q"
                 alt="Author" 
                 className="w-full h-full object-cover" 
               />

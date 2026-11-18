@@ -60,6 +60,8 @@ export interface IStorage {
   getProject(id: number): Promise<Project | undefined>;
   getProjectBySlug(slug: string): Promise<Project | undefined>;
   createProject(project: InsertProject): Promise<Project>;
+  updateProject(id: number, project: Partial<InsertProject>): Promise<Project>;
+  deleteProject(id: number): Promise<void>;
   getFeaturedProjects(): Promise<Project[]>;
 
   // Contact message operations

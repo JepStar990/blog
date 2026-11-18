@@ -123,4 +123,58 @@ router.post("/posts/:id/ai-edit", async (req: Request, res: Response) => {
   }
 });
 
+// List all projects
+router.get("/projects", async (_req: Request, res: Response) => {
+  try {
+    const projects = await storage.getAllProjects();
+    res.json(projects);
+  } catch (error) {
+    console.error("Error fetching projects:", error);
+    res.status(500).json({ error: "Failed to fetch projects" });
+  }
+});
+
+// Create project
+router.post("/projects", async (req: Request, res: Response) => {
+  try {
+    const project = await storage.createProject(req.body);
+    res.status(201).json(project);
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : String(error);
+    console.error("Error creating project:", msg);
+    res.status(500).json({ error: msg });
+  }
+});
+
+// Update project
+router.put("/projects/:id", async (req: Request, res: Response) => {
+  try {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) return res.status(400).json({ error: "Invalid project ID" });
+
+    const project = await storage.updateProject(id, req.body);
+    res.json(project);
+  } catch (error: any) {
+    console.error("Error updating project:", error);
+    if (error.message === "Project not found") {
+      return res.status(404).json({ error: "Project not found" });
+    }
+    res.status(500).json({ error: "Failed to update project" });
+  }
+});
+
+// Delete project
+router.delete("/projects/:id", async (req: Request, res: Response) => {
+  try {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) return res.status(400).json({ error: "Invalid project ID" });
+
+    await storage.deleteProject(id);
+    res.status(204).send();
+  } catch (error) {
+    console.error("Error deleting project:", error);
+    res.status(500).json({ error: "Failed to delete project" });
+  }
+});
+
 export default router;
