@@ -73,8 +73,8 @@ const FeaturedTutorial: React.FC = () => {
                     />
                   </div>
                   <div>
-                    <h4 className="font-bold">David Chen</h4>
-                    <p className="text-sm text-gray-600">Lead Data Engineer</p>
+                    <h4 className="font-bold">Zwiswa Muridili</h4>
+                    <p className="text-sm text-gray-600">Consulting Data Engineer</p>
                   </div>
                 </div>
                 <div className="flex items-center text-sm text-gray-600">

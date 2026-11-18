@@ -70,8 +70,8 @@ const PostContent: React.FC<PostContentProps> = ({ post }) => {
               />
             </div>
             <div className="text-left">
-              <h3 className="font-bold">David Chen</h3>
-              <p className="text-sm text-gray-600">Lead Data Engineer</p>
+              <h3 className="font-bold">Zwiswa Muridili</h3>
+              <p className="text-sm text-gray-600">Consulting Data Engineer</p>
             </div>
           </div>
           <div className="flex items-center text-sm text-gray-600">
